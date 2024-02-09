@@ -17,7 +17,7 @@ from camel.agents import EmbodiedAgent, HuggingFaceToolAgent
 from camel.agents.tool_agents.base import BaseToolAgent
 from camel.generators import SystemMessageGenerator
 from camel.messages import BaseMessage
-from camel.types import ModelType, RoleType
+from camel.typing import ModelType, RoleType
 
 
 def main():
@@ -27,18 +27,18 @@ def main():
     sys_msg = SystemMessageGenerator().from_dict(
         meta_dict=meta_dict,
         role_tuple=(f"{role_name}'s Embodiment", RoleType.EMBODIMENT))
-    tool_agents = [
+    action_space = [
         HuggingFaceToolAgent(
             'hugging_face_tool_agent',
-            model_type=ModelType.GPT_4.value,
+            model=ModelType.GPT_4.value,
             remote=True,
         )
     ]
-    tool_agents: List[BaseToolAgent]
+    action_space: List[BaseToolAgent]
     embodied_agent = EmbodiedAgent(
         sys_msg,
         verbose=True,
-        tool_agents=tool_agents,
+        action_space=action_space,
     )
     user_msg = BaseMessage.make_user_message(
         role_name=role_name,

@@ -21,7 +21,7 @@ from colorama import Fore
 
 from camel.configs import ChatGPTConfig
 from camel.societies import RolePlaying
-from camel.types import TaskType
+from camel.typing import TaskType
 from camel.utils import download_tasks
 
 
@@ -43,7 +43,7 @@ def generate_data(assistant_idx: int, assistant_role_name: str, user_idx: int,
             temperature=1.4)),
     )
 
-    input_msg = role_play_session.init_chat()
+    input_assistant_msg, _ = role_play_session.init_chat()
 
     if verbose:
         print(Fore.GREEN + "AI Assistant sys message:\n"
@@ -93,7 +93,8 @@ def generate_data(assistant_idx: int, assistant_role_name: str, user_idx: int,
 
     while message_counter < max_num_messages:
 
-        assistant_response, user_response = role_play_session.step(input_msg)
+        assistant_response, user_response = role_play_session.step(
+            input_assistant_msg)
 
         # Condition 1: User terminates the chat
         if user_response.terminated and user_response.info is not None:
@@ -164,7 +165,7 @@ def generate_data(assistant_idx: int, assistant_role_name: str, user_idx: int,
         message_dict[
             f"message_{message_counter}"] = assistant_response.msg.to_dict()
 
-        input_msg = assistant_response.msg
+        input_assistant_msg = assistant_response.msg
 
     message_dict["num_messages"] = message_counter
 

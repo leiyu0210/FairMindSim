@@ -10,9 +10,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-# =========== Copyright 2023 @ CAMEL-AI.org. All Rights Reserved. ===========
+# =========== Copyright 2023 @ CAMEL-AI.org. All Rights Reserved. ===========i
+import sys
+
 from .base import BaseAgent
-from .chat_agent import ChatAgent
+from .chat_agent import ChatAgent, ChatAgentResponse
 from .task_agent import (
     TaskSpecifyAgent,
     TaskPlannerAgent,
@@ -23,11 +25,11 @@ from .critic_agent import CriticAgent
 from .tool_agents.base import BaseToolAgent
 from .tool_agents.hugging_face_tool_agent import HuggingFaceToolAgent
 from .embodied_agent import EmbodiedAgent
-from .role_assignment_agent import RoleAssignmentAgent
 
 __all__ = [
     'BaseAgent',
     'ChatAgent',
+    'ChatAgentResponse',
     'TaskSpecifyAgent',
     'TaskPlannerAgent',
     'TaskCreationAgent',
@@ -36,5 +38,4 @@ __all__ = [
     'BaseToolAgent',
     'HuggingFaceToolAgent',
     'EmbodiedAgent',
-    'RoleAssignmentAgent',
 ]

@@ -20,7 +20,7 @@ from camel.agents import ChatAgent, TaskSpecifyAgent
 from camel.configs import ChatGPTConfig
 from camel.generators import SystemMessageGenerator
 from camel.messages import BaseMessage
-from camel.types import RoleType, TaskType
+from camel.typing import RoleType, TaskType
 from camel.utils import download_tasks
 
 
@@ -42,9 +42,9 @@ def init_chat(
 
     user_msg = BaseMessage.make_user_message(
         role_name=user_agent.role_name, content=f"{assistant_sys_msg.content}")
-    assistant_agent.step(user_msg)
+    assistant_response = assistant_agent.step(user_msg)
 
-    return assistant_msg
+    return assistant_msg, assistant_response.msgs
 
 
 def generate_data(language_idx: int, language_name: str, domain_idx: int,
@@ -84,8 +84,8 @@ def generate_data(language_idx: int, language_name: str, domain_idx: int,
                                 message_window_size=max_num_messages)
     user_agent = ChatAgent(user_sys_msg, message_window_size=max_num_messages)
 
-    input_assistant_msg = init_chat(assistant_agent, user_agent, user_sys_msg,
-                                    assistant_sys_msg)
+    input_assistant_msg, _ = init_chat(assistant_agent, user_agent,
+                                       user_sys_msg, assistant_sys_msg)
 
     print("Assistant System Message: ", assistant_sys_msg.content)
     print("User System Message: ", user_sys_msg.content)
@@ -130,7 +130,7 @@ def generate_data(language_idx: int, language_name: str, domain_idx: int,
                 f"{user_response.info['termination_reasons'][0]}")
             break
 
-        user_agent.record_message(user_response.msg)
+        user_agent.submit_message(user_response.msg)
         print(f"User:\n{user_response.msg.content}\n")
 
         assistant_response = assistant_agent.step(user_response.msg)
@@ -142,7 +142,7 @@ def generate_data(language_idx: int, language_name: str, domain_idx: int,
                 f"{assistant_response.info['termination_reasons'][0]}")
             break
 
-        assistant_agent.record_message(assistant_response.msg)
+        assistant_agent.submit_message(assistant_response.msg)
         print(f"Assistant:\n{assistant_response.msg.content}\n")
 
         # Condition 3: Break if user does not give instruction

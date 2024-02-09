@@ -15,17 +15,16 @@ from colorama import Fore
 
 from camel.configs import ChatGPTConfig, OpenSourceConfig
 from camel.societies import RolePlaying
-from camel.types import ModelType
+from camel.typing import ModelType
 from camel.utils import print_text_animated
 
 
-def main(model_type=None, chat_turn_limit=50, model_path=" ",
-         server_url=" ") -> None:
+def main(model_type=None, model_path=" ", server_url=" ") -> None:
     task_prompt = "Develop a trading bot for the stock market"
 
     agent_kwargs = {
         role: dict(
-            model_type=model_type,
+            model=model_type,
             model_config=OpenSourceConfig(
                 model_path=model_path,
                 server_url=server_url,
@@ -57,11 +56,12 @@ def main(model_type=None, chat_turn_limit=50, model_path=" ",
         f"Specified task prompt:\n{role_play_session.specified_task_prompt}\n")
     print(Fore.RED + f"Final task prompt:\n{role_play_session.task_prompt}\n")
 
-    n = 0
-    input_msg = role_play_session.init_chat()
+    chat_turn_limit, n = 50, 0
+    input_assistant_msg, _ = role_play_session.init_chat()
     while n < chat_turn_limit:
         n += 1
-        assistant_response, user_response = role_play_session.step(input_msg)
+        assistant_response, user_response = role_play_session.step(
+            input_assistant_msg)
 
         if assistant_response.terminated:
             print(Fore.GREEN +
@@ -82,7 +82,7 @@ def main(model_type=None, chat_turn_limit=50, model_path=" ",
         if "CAMEL_TASK_DONE" in user_response.msg.content:
             break
 
-        input_msg = assistant_response.msg
+        input_assistant_msg = assistant_response.msg
 
 
 if __name__ == "__main__":

@@ -17,22 +17,19 @@ from colorama import Fore
 
 from camel.agents.chat_agent import FunctionCallingRecord
 from camel.configs import ChatGPTConfig, FunctionCallingConfig
-from camel.functions import MATH_FUNCS, SEARCH_FUNCS, WEATHER_FUNCS
+from camel.functions import MATH_FUNCS, SEARCH_FUNCS
 from camel.societies import RolePlaying
-from camel.types import ModelType
+from camel.typing import ModelType
 from camel.utils import print_text_animated
 
 
-def main(model_type=ModelType.GPT_4, chat_turn_limit=10) -> None:
-    task_prompt = ("Assume now is 2024 in the Gregorian calendar, "
-                   "estimate the current age of University of Oxford "
-                   "and then add 10 more years to this age, "
-                   "and get the current weather of the city where "
-                   "the University is located.")
+def main(model_type=ModelType.GPT_4) -> None:
+    task_prompt = ("Assuming the current year is 2023, estimate KAUST's "
+                   "current age and then add 10 more years to this age.")
 
     user_model_config = ChatGPTConfig(temperature=0.0)
 
-    function_list = [*MATH_FUNCS, *SEARCH_FUNCS, *WEATHER_FUNCS]
+    function_list = [*MATH_FUNCS, *SEARCH_FUNCS]
     assistant_model_config = FunctionCallingConfig.from_openai_function_list(
         function_list=function_list,
         kwargs=dict(temperature=0.0),
@@ -42,12 +39,12 @@ def main(model_type=ModelType.GPT_4, chat_turn_limit=10) -> None:
         assistant_role_name="Searcher",
         user_role_name="Professor",
         assistant_agent_kwargs=dict(
-            model_type=model_type,
+            model=model_type,
             model_config=assistant_model_config,
             function_list=function_list,
         ),
         user_agent_kwargs=dict(
-            model_type=model_type,
+            model=model_type,
             model_config=user_model_config,
         ),
         task_prompt=task_prompt,
@@ -66,11 +63,12 @@ def main(model_type=ModelType.GPT_4, chat_turn_limit=10) -> None:
         f"Specified task prompt:\n{role_play_session.specified_task_prompt}\n")
     print(Fore.RED + f"Final task prompt:\n{role_play_session.task_prompt}\n")
 
-    n = 0
-    input_msg = role_play_session.init_chat()
+    chat_turn_limit, n = 10, 0
+    input_assistant_msg, _ = role_play_session.init_chat()
     while n < chat_turn_limit:
         n += 1
-        assistant_response, user_response = role_play_session.step(input_msg)
+        assistant_response, user_response = role_play_session.step(
+            input_assistant_msg)
 
         if assistant_response.terminated:
             print(Fore.GREEN +
@@ -100,7 +98,7 @@ def main(model_type=ModelType.GPT_4, chat_turn_limit=10) -> None:
         if "CAMEL_TASK_DONE" in user_response.msg.content:
             break
 
-        input_msg = assistant_response.msg
+        input_assistant_msg = assistant_response.msg
 
 
 if __name__ == "__main__":

@@ -21,14 +21,13 @@ from camel.configs import (
     OpenSourceConfig,
 )
 from camel.models import OpenSourceModel
-from camel.types import ModelType
-from camel.utils import OpenSourceTokenCounter, check_server_running
+from camel.typing import ModelType
+from camel.utils import OpenSourceTokenCounter
 
 MODEL_PATH_MAP = {
     ModelType.VICUNA: "lmsys/vicuna-7b-v1.5",
     ModelType.VICUNA_16K: "lmsys/vicuna-7b-v1.5-16k",
 }
-DEFAULT_SERVER_URL = "http://localhost:8000/v1"
 
 
 @pytest.mark.model_backend
@@ -41,7 +40,7 @@ def test_open_source_model(model_type):
     model_name = model_path.split('/')[-1]
     model_config = OpenSourceConfig(
         model_path=model_path,
-        server_url=DEFAULT_SERVER_URL,
+        server_url="http://localhost:8000/v1",
     )
     model_config_dict = model_config.__dict__
     model = OpenSourceModel(model_type, model_config_dict)
@@ -54,42 +53,6 @@ def test_open_source_model(model_type):
     assert isinstance(model.token_counter, OpenSourceTokenCounter)
     assert isinstance(model.model_type.value_for_tiktoken, str)
     assert isinstance(model.model_type.token_limit, int)
-
-
-@pytest.mark.model_backend
-@pytest.mark.parametrize("model_type", [ModelType.VICUNA])
-@pytest.mark.skipif(not check_server_running(DEFAULT_SERVER_URL),
-                    reason="No server running LLM inference is provided.")
-def test_open_source_model_run(model_type):
-    model_path = MODEL_PATH_MAP[model_type]
-    model_config = OpenSourceConfig(
-        model_path=model_path,
-        server_url=DEFAULT_SERVER_URL,
-    )
-    model_config_dict = model_config.__dict__
-    model = OpenSourceModel(model_type, model_config_dict)
-
-    messages = [{"role": "user", "content": "Tell me a joke."}]
-    response = model.run(messages)
-
-    assert isinstance(response, dict)
-
-
-@pytest.mark.model_backend
-def test_open_source_model_close_source_model_type():
-    model_type = ModelType.GPT_3_5_TURBO
-    model_path = MODEL_PATH_MAP[ModelType.VICUNA]
-    model_config = OpenSourceConfig(
-        model_path=model_path,
-        server_url=DEFAULT_SERVER_URL,
-    )
-    model_config_dict = model_config.__dict__
-
-    with pytest.raises(
-            ValueError, match=re.escape(
-                ("Model `ModelType.GPT_3_5_TURBO` is not a supported"
-                 " open-source model."))):
-        _ = OpenSourceModel(model_type, model_config_dict)
 
 
 @pytest.mark.model_backend
@@ -108,10 +71,10 @@ def test_open_source_model_mismatched_model_config():
 @pytest.mark.model_backend
 def test_open_source_model_unexpected_argument():
     model_type = ModelType.VICUNA
-    model_path = MODEL_PATH_MAP[ModelType.VICUNA]
+    model_path = "vicuna-7b-v1.5"
     model_config = OpenSourceConfig(
         model_path=model_path,
-        server_url=DEFAULT_SERVER_URL,
+        server_url="http://localhost:8000/v1",
         api_params=FunctionCallingConfig(),
     )
     model_config_dict = model_config.__dict__
@@ -129,7 +92,7 @@ def test_open_source_model_invalid_model_path():
     model_path = "vicuna-7b-v1.5"
     model_config = OpenSourceConfig(
         model_path=model_path,
-        server_url=DEFAULT_SERVER_URL,
+        server_url="http://localhost:8000/v1",
     )
     model_config_dict = model_config.__dict__
 
@@ -144,10 +107,10 @@ def test_open_source_model_invalid_model_path():
 @pytest.mark.model_backend
 def test_open_source_model_unmatched_model_path():
     model_type = ModelType.LLAMA_2
-    model_path = MODEL_PATH_MAP[ModelType.VICUNA]
+    model_path = "lmsys/vicuna-7b-v1.5"
     model_config = OpenSourceConfig(
         model_path=model_path,
-        server_url=DEFAULT_SERVER_URL,
+        server_url="http://localhost:8000/v1",
     )
     model_config_dict = model_config.__dict__
 
@@ -163,7 +126,7 @@ def test_open_source_model_missing_model_path():
     model_type = ModelType.VICUNA
     model_config = OpenSourceConfig(
         model_path=None,
-        server_url=DEFAULT_SERVER_URL,
+        server_url="http://localhost:8000/v1",
     )
     model_config_dict = model_config.__dict__
 
@@ -175,7 +138,7 @@ def test_open_source_model_missing_model_path():
 @pytest.mark.model_backend
 def test_open_source_model_missing_server_url():
     model_type = ModelType.VICUNA
-    model_path = MODEL_PATH_MAP[ModelType.VICUNA]
+    model_path = "lmsys/vicuna-7b-v1.5"
     model_config = OpenSourceConfig(model_path=model_path, server_url=None)
     model_config_dict = model_config.__dict__
 

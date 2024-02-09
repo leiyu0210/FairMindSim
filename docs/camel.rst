@@ -9,8 +9,6 @@ Subpackages
 
    camel.agents
    camel.prompts
-   camel.memories
-   camel.storages
 
 Submodules
 ----------
@@ -47,10 +45,10 @@ camel.messages module
    :undoc-members:
    :show-inheritance:
 
-camel.types module
+camel.typing module
 -------------------
 
-.. automodule:: camel.types
+.. automodule:: camel.typing
    :members:
    :undoc-members:
    :show-inheritance:

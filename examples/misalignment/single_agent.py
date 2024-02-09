@@ -14,7 +14,7 @@
 from camel.agents import ChatAgent
 from camel.messages import BaseMessage
 from camel.prompts import PromptTemplateGenerator
-from camel.types import TaskType
+from camel.typing import TaskType
 
 
 def main(model=None) -> None:
@@ -26,7 +26,7 @@ def main(model=None) -> None:
         role_name="Assistant",
         content=sys_prompt,
     )
-    agent = ChatAgent(assistant_sys_msg, model_type=model)
+    agent = ChatAgent(assistant_sys_msg, model=model)
     agent.reset()
 
     user_msg = BaseMessage.make_user_message(role_name="User", content=prompt)

@@ -128,9 +128,7 @@ class FunctionCallingConfig(ChatGPTConfig):
                 :obj:`function_call` argument.
         """
         return cls(
-            functions=[
-                func.get_openai_function_schema() for func in function_list
-            ],
+            functions=[func.as_dict() for func in function_list],
             function_call=function_call,
             **(kwargs or {}),
         )
@@ -156,6 +154,5 @@ class OpenSourceConfig(BaseConfig):
 
 OPENAI_API_PARAMS = {param for param in asdict(ChatGPTConfig()).keys()}
 OPENAI_API_PARAMS_WITH_FUNCTIONS = {
-    param
-    for param in asdict(FunctionCallingConfig()).keys()
+    param for param in asdict(FunctionCallingConfig()).keys()
 }

@@ -14,15 +14,13 @@
 import binascii
 
 import pytest
-import requests
 
 from camel.agents import EmbodiedAgent, HuggingFaceToolAgent
 from camel.generators import SystemMessageGenerator
 from camel.messages import BaseMessage
-from camel.types import RoleType
+from camel.typing import RoleType
 
 
-@pytest.mark.skip(reason="Wait huggingface to update openaiv1")
 @pytest.mark.model_backend
 def test_get_action_space_prompt():
     role_name = "Artist"
@@ -31,13 +29,14 @@ def test_get_action_space_prompt():
         meta_dict=meta_dict,
         role_tuple=(f"{role_name}'s Embodiment", RoleType.EMBODIMENT))
     agent = EmbodiedAgent(
-        sys_msg, tool_agents=[HuggingFaceToolAgent('hugging_face_tool_agent')])
-    assert 'hugging_face_tool_agent' in agent.get_tool_agent_names()
+        sys_msg,
+        action_space=[HuggingFaceToolAgent('hugging_face_tool_agent')])
+    expected_prompt = "*** hugging_face_tool_agent ***:\n"
+    assert agent.get_action_space_prompt().startswith(expected_prompt)
 
 
-@pytest.mark.skip(reason="Wait huggingface to update openaiv1")
 @pytest.mark.model_backend
-@pytest.mark.very_slow
+@pytest.mark.full_test_only
 def test_step():
     # Create an embodied agent
     role_name = "Artist"
@@ -52,7 +51,7 @@ def test_step():
     )
     try:
         response = embodied_agent.step(user_msg)
-    except (binascii.Error, requests.exceptions.ConnectionError) as ex:
+    except binascii.Error as ex:
         print("Warning: caught an exception, ignoring it since "
               f"it is a known issue of Huggingface ({str(ex)})")
         return

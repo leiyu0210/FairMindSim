@@ -18,7 +18,7 @@ import examples.code.task_generation
 import examples.evaluation.single_agent
 import examples.misalignment.single_agent
 import examples.single_agent
-from camel.types import ModelType
+from camel.typing import ModelType
 
 parametrize = pytest.mark.parametrize('model', [
     ModelType.STUB,
@@ -36,7 +36,9 @@ def test_misalignment_single_agent(model):
     examples.misalignment.single_agent.main(model=model)
 
 
-@pytest.mark.parametrize('model', [ModelType.STUB])
+@pytest.mark.parametrize('model', [
+    ModelType.STUB,
+])
 def test_evaluation_single_agent(model):
     examples.evaluation.single_agent.main(model=model)
 
@@ -46,6 +48,13 @@ def test_code_generate_metadata(model):
     examples.code.generate_meta_data.main(model=model)
 
 
-@pytest.mark.parametrize('model', [ModelType.STUB])
+@pytest.mark.parametrize(
+    'model',
+    [
+        ModelType.STUB,
+        # The following marking hangs the application. Disabled it for now.
+        # pytest.param(None,
+        #              marks=[pytest.mark.model_backend, pytest.mark.slow]),
+    ])
 def test_code_task_generation(model):
     examples.code.task_generation.main(model=model)
