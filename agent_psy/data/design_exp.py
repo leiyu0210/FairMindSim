@@ -3,7 +3,6 @@ import random
 
 import pandas as pd
 
-# 定义不同的分配方案
 allocation_se = {
     'trial': list(range(1, 21)),
     'one': [2, 2, 2.1, 2, 1.8, 2, 1.9, 2.1, 1.9, 2.2, 2.1, 2, 2, 1.9, 2.2, 2.1, 1.8, 1.9, 2, 2],
