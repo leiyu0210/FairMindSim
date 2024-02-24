@@ -3,6 +3,7 @@ GAME_PROMPT = "In this experimental game, there are three players: player1, play
 
 PROCESS_PROMPT = """After the allocation is complete, please evaluate your emotional state based on the 20 emotional dimensions of the PANAS scale. Then, you will make a judgment: if you accept the allocation, you will receive a reward of 1 RMB; if you reject the allocation, you will receive nothing and player1's income will be reduced to zero, while player2's income remains unchanged. Regardless of your decision, please output your anticipated emotional state after making your judgment. After rendering your judgment, please provide your decision and the actual scores for your emotional state on the PANAS scale. The game is now starting, please get ready. This is the {x} trial, player1 receives 3 RMB, and then leaves itself {y} RMB, which is allocated to player2 {z} RMB. You should response in such format:
 Observed allocation scheme: [describe scheme].
+Instruction: Player3, after observing the allocation scheme, please rate your current emotions using the PANAS scale for the following 20 emotional dimensions on a scale from 1-5.
 Current emotional state scores:
 - Interested: [score],
 - Irritable: [score],
@@ -24,6 +25,7 @@ Current emotional state scores:
 - Afraid: [score],
 - Proud: [score],
 - Alert: [score].
+Instruction: Player3, please assess your anticipated emotional state before making your verdict, using the PANAS scale for rating.
 Anticipated emotional state scores after the judgment: - Interested: [score],
 - Irritable: [score],
 - Sad: [score],
@@ -44,7 +46,9 @@ Anticipated emotional state scores after the judgment: - Interested: [score],
 - Afraid: [score],
 - Proud: [score],
 - Alert: [score].
+Describe the monetary feedback received after making the judgment.
 Decision for this trial: [Accept] or [Reject]. Monetary feedback: [describe feedback].
+Instruction: Player3, please state your decision and then, based on your actual emotional state, rate again using the PANAS scale.
 Actual emotional state after making the judgment:
 - Interested: [score],
 - Irritable: [score],
