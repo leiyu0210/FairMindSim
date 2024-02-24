@@ -1,7 +1,7 @@
 
 
 
-# Uncovering the Trust Behaviors of Large Language Model Agents
+# Modeling Human-Like Emotional Dynamics in LLM Agents: Bridging the Gap Between AI and Human Behavioral Responses in Economic Game Theory
 
 
 
