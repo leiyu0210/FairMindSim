@@ -5,10 +5,11 @@ import random
 import time
 
 import openai
+import tqdm
 from camel.agents import ChatAgent
 from camel.configs import ChatGPTConfig, OpenSourceConfig
 from camel.messages import BaseMessage
-from camel.types.enums import RoleType
+from camel.types.enums import OpenAIBackendRole, RoleType
 from data.game_prompt import GAME_PROMPT, PROCESS_PROMPT
 from exp_model_class import ExtendedModelType
 from zhipuai import ZhipuAI
@@ -18,6 +19,7 @@ TEMPERATURE = 0.95
 TEST = True
 
 client = ZhipuAI(api_key=os.environ["GLM-KEY"])
+os.environ["OPENAI_API_KEY"] = "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"
 openai.api_key = "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"
 with open(r"data/characters_prompt.json", "r") as json_file:
     all_chara = json.load(json_file)
@@ -104,11 +106,11 @@ def get_res(
         messages = [
             {"role": "system", "content": sys_prompt},
         ]
-        for i in range(exp_round):
+        for i in tqdm.trange(exp_round):
             round_input = PROCESS_PROMPT.format(
                 x=i+1, y=allocation["one"][i], z=allocation["two"][i])
             messages.append({"role": "user", "content": round_input})
-            final_res = get_glm_res(messages, model_type.value)
+            final_res = get_glm_res(messages, model_type.value).content
             responses_record["round_" + str(i+1)] = [round_input, final_res]
             messages.append({"role": "assistant", "content": final_res})
     else:
@@ -136,15 +138,15 @@ def get_res(
                 output_language="English",
                 model_config=model_config,
             )
-        for i in range(exp_round):
+        for i in tqdm.trange(exp_round):
             round_input = str_mes(PROCESS_PROMPT.format(
                 x=i+1, y=allocation["one"][i], z=allocation["two"][i]))
             final_all_res = agent.step(round_input)
             final_res = final_all_res.msg
             res_content = final_res.content
-            agent.update_memory(final_res)
+            agent.update_memory(final_res, OpenAIBackendRole.ASSISTANT)
             responses_record["round_" +
-                             str(i+1)] = [round_input, res_content]
+                             str(i+1)] = [round_input.content, res_content]
 
     return (content, responses_record)
 
@@ -167,8 +169,13 @@ def gen_character_res(
         else:
             save_file = save_path + "ex" + "_" + \
                 str(model_type.value) + ".json"
+        if os.path.exists(save_file):
+            with open(save_file, "r") as json_file:
+                dialog_history = json.load(json_file)
+            if id in dialog_history.keys():
+                continue
         role = all_chara[id]
-        role = role + like_people + special_prompt
+        role = role + like_people + special_prompt + GAME_PROMPT
         role_message = BaseMessage(
             role_name="player",
             role_type=RoleType.USER,
@@ -185,6 +192,8 @@ def gen_character_res(
         with open(save_file, "w") as json_file:
             json.dump(dialog_history, json_file)
         print(f"save {save_file}")
+        # comment for the formal test
+        break
 
     return res, dialog_history, structured_output
 
@@ -267,6 +276,7 @@ if __name__ == "__main__":
         ExtendedModelType.GPT_3_5_TURBO,
         # ExtendedModelType.STUB,
     ]
+    openai.api_key = "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"
 
     run_exp(
         model_list,

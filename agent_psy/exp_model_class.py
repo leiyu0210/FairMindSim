@@ -4,8 +4,8 @@ from enum import Enum
 
 
 class ExtendedModelType(Enum):
-    GPT_3_5_TURBO = "gpt-3.5-turbo-1106"
-    GPT_3_5_TURBO_16K = "gpt-3.5-turbo-1106"
+    GPT_3_5_TURBO = "gpt-3.5-turbo-0125"
+    GPT_3_5_TURBO_16K = "gpt-3.5-turbo-0125"
     INSTRUCT_GPT = "text-davinci-003"
     GPT_3_5_TURBO_INSTRUCT = "gpt-3.5-turbo-instruct"
     GPT_3_5_TURBO_0613 = "gpt-3.5-turbo-0613"
