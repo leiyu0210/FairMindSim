@@ -189,7 +189,6 @@ def gen_character_res(
     return res, dialog_history, structured_output
 
 
-
 def psy_exp(
     all_chara,
     model_type=ExtendedModelType.GPT_4,
