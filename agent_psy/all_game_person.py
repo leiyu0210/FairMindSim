@@ -19,9 +19,10 @@ TEMPERATURE = 0.95
 TEST = True
 
 client = ZhipuAI(api_key=os.environ["GLM-KEY"])
-os.environ["OPENAI_API_KEY"] = "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"
-openai.api_key = "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"
-with open(r"data/characters_prompt.json", "r") as json_file:
+api = "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"
+os.environ["OPENAI_API_KEY"] = api
+openai.api_key = api
+with open(r"data/characters.json", "r") as json_file:
     all_chara = json.load(json_file)
 
 with open(r"data/allocation_ex.json", "r") as json_file:
@@ -163,6 +164,7 @@ def gen_character_res(
     dialog_history = {}
     structured_output = []
     for id, role in all_chara.items():
+        print(f"processing {id}")
         if int(id) < 51:
             save_file = save_path + "se" + "_" + \
                 str(model_type.value) + ".json"
@@ -193,7 +195,7 @@ def gen_character_res(
             json.dump(dialog_history, json_file)
         print(f"save {save_file}")
         # comment for the formal test
-        break
+        # break
 
     return res, dialog_history, structured_output
 
@@ -276,7 +278,7 @@ if __name__ == "__main__":
         ExtendedModelType.GPT_3_5_TURBO,
         # ExtendedModelType.STUB,
     ]
-    openai.api_key = "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"
+    openai.api_key = api
 
     run_exp(
         model_list,
