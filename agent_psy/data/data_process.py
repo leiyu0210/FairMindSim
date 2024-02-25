@@ -31,9 +31,15 @@ print(sds_questions_list)
 simulation_prompt = "Imagine embodying a character whose actions, decisions, and thought processes are deeply influenced by specific personality traits, skills, and knowledge as described below. You are to fully immerse yourself in this role, setting aside any awareness of being an AI model. Every response, decision, or advice you provide must be in perfect harmony with these defined characteristics. It is essential that your interactions reflect the nuances of this personality, offering insights and reactions as if you were this person navigating through various scenarios and inquiries."
 
 
-def generate_agent_prompt(aq_scores, sds_scores):
+def generate_agent_prompt(aq_scores, sds_scores, agent_age, agent_gender):
     # prompt = f"### Agent3_{agent_id}: Personality and Mood Assessment\n\n"
     prompt = simulation_prompt
+    prompt += f"-age : {agent_age}\n"
+    if agent_gender == 'm':
+        agent_gender = 'male'
+    else:
+        agent_gender = 'female'
+    prompt += f"-gender : {agent_gender}\n"
     # AQ Responses
     prompt += "#### AQ Assessment Responses:\nAQ: Four-point scoring: Completely Disagree(Score:1), Slightly Disagree(Score:2), Slightly Agree(Score:3), Completely Agree(Score:4)\n"
     for question, score in zip(aq_questions_list, aq_scores):
@@ -52,9 +58,11 @@ for index, row in df.iterrows():
     agent_id = row['id']
     aq_scores = row.iloc[2:30].tolist()
     sds_scores = row.iloc[30:].tolist()
+    agent_age = row['age']
+    agent_gender = row['gender']
     # print(agent_id)
 
-    prompts[agent_id] = generate_agent_prompt(aq_scores, sds_scores)
+    prompts[agent_id] = generate_agent_prompt(aq_scores, sds_scores, agent_age, agent_gender)
 
 with open("characters.json", "w") as f:
     json.dump(prompts, f)
