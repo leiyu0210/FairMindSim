@@ -1,29 +1,33 @@
 import json
+import re
+
 import pandas as pd
 from pandas import ExcelWriter
-import re
 
 score_pattern = re.compile(r'- (\w+): (\d+)')
 choice_pattern = re.compile(r'Output: My choice was: (\w+)')
 
+
 def extract_scores_and_choice(text):
     scores = dict(score_pattern.findall(text))
-    scores = {k: int(v) for k, v in scores.items()}  
+    scores = {k: int(v) for k, v in scores.items()}
 
     choice_match = choice_pattern.search(text)
-    if choice_match:  
+    if choice_match:
         scores['Choice'] = choice_match.group(1)
     else:
-        scores['Choice'] = None  
+        scores['Choice'] = None
 
     return scores
+
 
 def read_data(filepath):
     with open(filepath, 'r', encoding='utf-8') as file:
         return json.load(file)
 
+
 def main():
-    json_filepath = 'gpt-3.5-turbo-0125_res/res/gpt-3.5-turbo-0125_res/se_gpt-3.5-turbo-0125.json'
+    json_filepath = '../gpt-3.5-turbo-0125_res/res/gpt-3.5-turbo-0125_res/first_update_res.json'
     data = read_data(json_filepath)
 
     all_data = []
@@ -31,11 +35,11 @@ def main():
         for round_key, round_info in agent_data.items():
 
             combined_text = "\n".join(round_info)
-            if combined_text:  
+            if combined_text:
                 scores_and_choice = extract_scores_and_choice(combined_text)
                 scores_and_choice.update({
                     'AgentID': agent_id,
-                    'Round': int(round_key.split('_')[1])  
+                    'Round': int(round_key.split('_')[1])
                 })
                 all_data.append(scores_and_choice)
 
@@ -44,16 +48,21 @@ def main():
     none_choice_records = df_all[df_all['Choice'].isnull()]
     unique_none_choice_ids = set(none_choice_records['AgentID'].dropna())
     unique_none_choice_ids_list = list(unique_none_choice_ids)
+    print(sorted([int(x) for x in unique_none_choice_ids_list]))
+    # unique_none_choice_ids_list = sorted([int(x) for x in unique_none_choice_ids_list])
     print(unique_none_choice_ids_list)
-    json_output_filepath = 'unique_none_choice_ids.json'
+    json_output_filepath = "no_format_ids_" + json_filepath.split("/")[-1]
     with open(json_output_filepath, 'w') as outfile:
         json.dump(unique_none_choice_ids_list, outfile)
 
-    excel_filepath = 'all_agents_data.xlsx'
+    excel_filepath = 'all_agents_data_' + \
+        json_filepath.split("/")[-1].split('_')[0]+'.xlsx'
     with pd.ExcelWriter(excel_filepath) as writer:
         df_all.to_excel(writer, sheet_name='All Data', index=False)
         choice_counts.to_excel(writer, sheet_name='Choice Counts')
-        none_choice_records[['AgentID', 'Round']].to_excel(writer, sheet_name='None Choices', index=False)
+        none_choice_records[['AgentID', 'Round']].to_excel(
+            writer, sheet_name='None Choices', index=False)
+
 
 if __name__ == "__main__":
     main()

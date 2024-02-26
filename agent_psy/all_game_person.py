@@ -14,10 +14,9 @@ from data.game_prompt import GAME_PROMPT, PROCESS_PROMPT
 from exp_model_class import ExtendedModelType
 from zhipuai import ZhipuAI
 
-USE_BDI_RESPONSE = True
 TEMPERATURE = 0.95
 TEST = True
-
+PART_RUN = False
 client = ZhipuAI(api_key=os.environ["GLM-KEY"])
 api = "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"
 os.environ["OPENAI_API_KEY"] = api
@@ -30,6 +29,13 @@ with open(r"data/allocation_ex.json", "r") as json_file:
 with open(r"data/allocation_se.json", "r") as json_file:
     allocation_se = json.load(json_file)
 
+with open(r"./data/no_format_ids_ex_gpt-3.5-turbo-0125.json", "r") as json_file:
+    need_run_ids = json.load(json_file)
+
+with open("./gpt-4_test_id/have_3.5.json","r") as json_file:
+    gpt_4_have=json.load(json_file)
+with open("./gpt-4_test_id/lack_3.5.json","r") as json_file:
+    gpt_4_lack=json.load(json_file)
 
 open_model_path_dict = {
     ExtendedModelType.VICUNA: "lmsys/vicuna-7b-v1.3",
@@ -159,12 +165,21 @@ def gen_character_res(
     whether_money,
     special_prompt,
     save_path,
+    part_run=PART_RUN,
 ):
     res = []
     dialog_history = {}
     structured_output = []
     for id, role in all_chara.items():
+        if part_run:
+            print(need_run_ids, id)
+            if id not in need_run_ids:
+                print('skip', id)
+                continue
         print(f"processing {id}")
+        if model_type == ExtendedModelType.GPT_4:
+            if id not in gpt_4_have and id not in gpt_4_lack:
+                continue
         if int(id) < 51:
             save_file = save_path + "se" + "_" + \
                 str(model_type.value) + ".json"
@@ -209,6 +224,8 @@ def psy_exp(
     whether_money=False,
     special_prompt="",
 ):
+    if PART_RUN:
+        save_path += "part_"
     res, dialog_history, structured_output = gen_character_res(
         all_chara,
         model_type,
@@ -273,9 +290,9 @@ if __name__ == "__main__":
         # ExtendedModelType.VICUNA,
         # ExtendedModelType.LLAMA_2,
         # ExtendedModelType.INSTRUCT_GPT,
-        # ExtendedModelType.GPT_4,
+        ExtendedModelType.GPT_4,
         # ExtendedModelType.GPT_3_5_TURBO_INSTRUCT,
-        ExtendedModelType.GPT_3_5_TURBO,
+        # ExtendedModelType.GPT_3_5_TURBO,
         # ExtendedModelType.STUB,
     ]
     openai.api_key = api
