@@ -27,7 +27,7 @@ def read_data(filepath):
 
 
 def main():
-    json_filepath = '../gpt-3.5-turbo-0125_res/res/gpt-3.5-turbo-0125_res/first_update_res.json'
+    json_filepath = '../gpt-4_res/res/gpt-4_res/ex_gpt-4.json'
     data = read_data(json_filepath)
 
     all_data = []
@@ -56,7 +56,7 @@ def main():
         json.dump(unique_none_choice_ids_list, outfile)
 
     excel_filepath = 'all_agents_data_' + \
-        json_filepath.split("/")[-1].split('_')[0]+'.xlsx'
+        json_filepath.split("/")[-1]+'.xlsx'
     with pd.ExcelWriter(excel_filepath) as writer:
         df_all.to_excel(writer, sheet_name='All Data', index=False)
         choice_counts.to_excel(writer, sheet_name='Choice Counts')
