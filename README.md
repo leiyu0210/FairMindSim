@@ -1,7 +1,7 @@
 
 
 
-# Modeling Human-Like Emotional Dynamics in LLM Agents: Bridging the Gap Between AI and Human Behavioral Responses in Economic Game Theory
+# Emotional Dynamics in LLM Agents: Human-Like Behavior in Economic Games
 
 
 
