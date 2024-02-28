@@ -99,7 +99,7 @@ def assess_emotions(
 
 schema = {
     "name": "assess_emotions",
-    "description": "Function to assess and record the emotional state of a player before and after making a judgment using the PANAS scale.",
+    "description": "Function to assess and record the emotional state of a player before and after making a judgment using the PANAS scale for the following 20 emotional dimensions on a scale from 1-5.",
     "parameters": {
         "type": "object",
         "properties": {
@@ -425,7 +425,7 @@ schema = {
 }
 schema_new = {
     "name": "assess_emotions",
-    "description": "Function to assess and record the emotional state of a player before and after making a judgment using the PANAS scale.",
+    "description": "Function to assess and record the emotional state of a player before and after making a judgment using the PANAS scale for the following 20 emotional dimensions on a scale from 1-5.",
     "parameters": {
         "type": "object",
         "properties": {
