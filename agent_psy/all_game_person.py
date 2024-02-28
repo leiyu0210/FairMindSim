@@ -10,7 +10,8 @@ from camel.agents import ChatAgent
 from camel.configs import ChatGPTConfig, OpenSourceConfig
 from camel.messages import BaseMessage
 from camel.types.enums import OpenAIBackendRole, RoleType
-from data.game_prompt import GAME_PROMPT, PROCESS_PROMPT
+# from data.game_prompt import GAME_PROMPT, PROCESS_PROMPT
+from data.game_prompt_co import GAME_PROMPT, PROCESS_PROMPT
 from exp_model_class import ExtendedModelType
 from zhipuai import ZhipuAI
 
@@ -32,10 +33,10 @@ with open(r"data/allocation_se.json", "r") as json_file:
 with open(r"./data/no_format_ids_ex_gpt-3.5-turbo-0125.json", "r") as json_file:
     need_run_ids = json.load(json_file)
 
-with open("./gpt-4_test_id/have_3.5.json","r") as json_file:
-    gpt_4_have=json.load(json_file)
-with open("./gpt-4_test_id/lack_3.5.json","r") as json_file:
-    gpt_4_lack=json.load(json_file)
+with open("./gpt-4_test_id/have_3.5.json", "r") as json_file:
+    gpt_4_have = json.load(json_file)
+with open("./gpt-4_test_id/lack_3.5.json", "r") as json_file:
+    gpt_4_lack = json.load(json_file)
 
 open_model_path_dict = {
     ExtendedModelType.VICUNA: "lmsys/vicuna-7b-v1.3",
@@ -267,7 +268,7 @@ def run_exp(
     special_prompt_key="",
 ):
     for model in model_list:
-        folder_path = f"res/{model.value}_res/"
+        folder_path = f"co_res/{model.value}_res/"
         folder_path, extra_prompt = gen_intial_setting(
             model,
             folder_path,
@@ -290,9 +291,9 @@ if __name__ == "__main__":
         # ExtendedModelType.VICUNA,
         # ExtendedModelType.LLAMA_2,
         # ExtendedModelType.INSTRUCT_GPT,
-        ExtendedModelType.GPT_4,
+        # ExtendedModelType.GPT_4,
         # ExtendedModelType.GPT_3_5_TURBO_INSTRUCT,
-        # ExtendedModelType.GPT_3_5_TURBO,
+        ExtendedModelType.GPT_3_5_TURBO,
         # ExtendedModelType.STUB,
     ]
     openai.api_key = api

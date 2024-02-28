@@ -9,6 +9,7 @@ choice_pattern = re.compile(r'Output: My choice was: (\w+)')
 
 
 def extract_scores_and_choice(text):
+    print(text)
     scores = dict(score_pattern.findall(text))
     scores = {k: int(v) for k, v in scores.items()}
 
