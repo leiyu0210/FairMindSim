@@ -6,19 +6,21 @@ import time
 
 import openai
 import tqdm
-from camel.agents import ChatAgent
-from camel.configs import ChatGPTConfig, OpenSourceConfig
-from camel.messages import BaseMessage
-from camel.types.enums import OpenAIBackendRole, RoleType
 # from data.game_prompt import GAME_PROMPT, PROCESS_PROMPT
 from data.game_prompt_co import GAME_PROMPT, PROCESS_PROMPT
 from exp_model_class import ExtendedModelType
+from utils.format_output import schema,format_function_list
 from zhipuai import ZhipuAI
+
+from camel.agents import ChatAgent
+from camel.configs import ChatGPTConfig, FunctionCallingConfig, OpenSourceConfig
+from camel.messages import BaseMessage
+from camel.types.enums import OpenAIBackendRole, RoleType
 
 TEMPERATURE = 0.95
 TEST = True
 PART_RUN = False
-client = ZhipuAI(api_key=os.environ["GLM-KEY"])
+# client = ZhipuAI(api_key=os.environ["GLM-KEY"])
 api = "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"
 os.environ["OPENAI_API_KEY"] = api
 openai.api_key = api
@@ -123,7 +125,6 @@ def get_res(
             messages.append({"role": "assistant", "content": final_res})
     else:
         role = str_mes(role.content + extra_prompt)
-        model_config = ChatGPTConfig(temperature=TEMPERATURE)
         if model_type in [
             ExtendedModelType.VICUNA,
             ExtendedModelType.LLAMA_2,
@@ -140,11 +141,19 @@ def get_res(
                 role, output_language="English", **(open_source_config or {})
             )
         else:
+            assistant_model_config = FunctionCallingConfig.from_openai_function_list(
+                function_list=format_function_list,
+                kwargs=dict(temperature=TEMPERATURE),
+                function_call={
+                    "type": "function", "function": {"name": "assess_emotions"}}
+            )
+
             agent = ChatAgent(
                 role,
                 model_type=model_type,
                 output_language="English",
-                model_config=model_config,
+                model_config=assistant_model_config,
+                function_list=format_function_list,
             )
         for i in tqdm.trange(exp_round):
             round_input = str_mes(PROCESS_PROMPT.format(

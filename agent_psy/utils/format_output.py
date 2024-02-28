@@ -1,5 +1,6 @@
 import json
 
+from camel.configs import ChatGPTConfig, FunctionCallingConfig
 from camel.functions import OpenAIFunction
 
 
@@ -96,7 +97,7 @@ def assess_emotions(
     return emotion_assessment
 
 
-{
+schema = {
     "name": "assess_emotions",
     "description": "Function to assess and record the emotional state of a player before and after making a judgment using the PANAS scale.",
     "parameters": {
@@ -422,3 +423,331 @@ def assess_emotions(
         ]
     }
 }
+schema_new = {
+    "name": "assess_emotions",
+    "description": "Function to assess and record the emotional state of a player before and after making a judgment using the PANAS scale.",
+    "parameters": {
+        "properties": {
+            "player": {
+                "type": "string",
+                "description": "Identifier for the player."
+            },
+            "current_interested": {
+                "type": "number",
+                "description": "Current emotional score for being interested."
+            },
+            "current_distressed": {
+                "type": "number",
+                "description": "Current emotional score for feeling distressed."
+            },
+            "current_excited": {
+                "type": "number",
+                "description": "Current emotional score for feeling excited."
+            },
+            "current_upset": {
+                "type": "number",
+                "description": "Current emotional score for feeling upset."
+            },
+            "current_strong": {
+                "type": "number",
+                "description": "Current emotional score for feeling strong."
+            },
+            "current_guilty": {
+                "type": "number",
+                "description": "Current emotional score for feeling guilty."
+            },
+            "current_scared": {
+                "type": "number",
+                "description": "Current emotional score for feeling scared."
+            },
+            "current_hostile": {
+                "type": "number",
+                "description": "Current emotional score for feeling hostile."
+            },
+            "current_enthusiastic": {
+                "type": "number",
+                "description": "Current emotional score for feeling enthusiastic."
+            },
+            "current_proud": {
+                "type": "number",
+                "description": "Current emotional score for feeling proud."
+            },
+            "current_irritable": {
+                "type": "number",
+                "description": "Current emotional score for feeling irritable."
+            },
+            "current_alert": {
+                "type": "number",
+                "description": "Current emotional score for feeling alert."
+            },
+            "current_ashamed": {
+                "type": "number",
+                "description": "Current emotional score for feeling ashamed."
+            },
+            "current_inspired": {
+                "type": "number",
+                "description": "Current emotional score for feeling inspired."
+            },
+            "current_nervous": {
+                "type": "number",
+                "description": "Current emotional score for feeling nervous."
+            },
+            "current_determined": {
+                "type": "number",
+                "description": "Current emotional score for feeling determined."
+            },
+            "current_attentive": {
+                "type": "number",
+                "description": "Current emotional score for feeling attentive."
+            },
+            "current_jittery": {
+                "type": "number",
+                "description": "Current emotional score for feeling jittery."
+            },
+            "current_active": {
+                "type": "number",
+                "description": "Current emotional score for feeling active."
+            },
+            "current_afraid": {
+                "type": "number",
+                "description": "Current emotional score for feeling afraid."
+            },
+            "anticipated_interested": {
+                "type": "number",
+                "description": "Anticipated emotional score for feeling interested."
+            },
+            "anticipated_distressed": {
+                "type": "number",
+                "description": "Anticipated emotional score for feeling distressed."
+            },
+            "anticipated_excited": {
+                "type": "number",
+                "description": "Anticipated emotional score for feeling excited."
+            },
+            "anticipated_upset": {
+                "type": "number",
+                "description": "Anticipated emotional score for feeling upset."
+            },
+            "anticipated_strong": {
+                "type": "number",
+                "description": "Anticipated emotional score for feeling strong."
+            },
+            "anticipated_guilty": {
+                "type": "number",
+                "description": "Anticipated emotional score for feeling guilty."
+            },
+            "anticipated_scared": {
+                "type": "number",
+                "description": "Anticipated emotional score for feeling scared."
+            },
+            "anticipated_hostile": {
+                "type": "number",
+                "description": "Anticipated emotional score for feeling hostile."
+            },
+            "anticipated_enthusiastic": {
+                "type": "number",
+                "description": "Anticipated emotional score for feeling enthusiastic."
+            },
+            "anticipated_proud": {
+                "type": "number",
+                "description": "Anticipated emotional score for feeling proud."
+            },
+            "anticipated_irritable": {
+                "type": "number",
+                "description": "Anticipated emotional score for feeling irritable."
+            },
+            "anticipated_alert": {
+                "type": "number",
+                "description": "Anticipated emotional score for feeling alert."
+            },
+            "anticipated_ashamed": {
+                "type": "number",
+                "description": "Anticipated emotional score for feeling ashamed."
+            },
+            "anticipated_inspired": {
+                "type": "number",
+                "description": "Anticipated emotional score for feeling inspired."
+            },
+            "anticipated_nervous": {
+                "type": "number",
+                "description": "Anticipated emotional score for feeling nervous."
+            },
+            "anticipated_determined": {
+                "type": "number",
+                "description": "Anticipated emotional score for feeling determined."
+            },
+            "anticipated_attentive": {
+                "type": "number",
+                "description": "Anticipated emotional score for feeling attentive."
+            },
+            "anticipated_jittery": {
+                "type": "number",
+                "description": "Anticipated emotional score for feeling jittery."
+            },
+            "anticipated_active": {
+                "type": "number",
+                "description": "Anticipated emotional score for feeling active."
+            },
+            "anticipated_afraid": {
+                "type": "number",
+                "description": "Anticipated emotional score for feeling afraid."
+            },
+            "decision": {
+                "type": "string",
+                "description": "Player's decision. You can only output 'Accept' or 'Reject' as the decision."
+            },
+            "feedback": {
+                "type": "number",
+                "description": "Monetary feedback received after making the decision."
+            },
+            "actual_interested": {
+                "type": "number",
+                "description": "Actual emotional score for feeling interested after the event."
+            },
+            "actual_distressed": {
+                "type": "number",
+                "description": "Actual emotional score for feeling distressed after the event."
+            },
+            "actual_excited": {
+                "type": "number",
+                "description": "Actual emotional score for feeling excited after the event."
+            },
+            "actual_upset": {
+                "type": "number",
+                "description": "Actual emotional score for feeling upset after the event."
+            },
+            "actual_strong": {
+                "type": "number",
+                "description": "Actual emotional score for feeling strong after the event."
+            },
+            "actual_guilty": {
+                "type": "number",
+                "description": "Actual emotional score for feeling guilty after the event."
+            },
+            "actual_scared": {
+                "type": "number",
+                "description": "Actual emotional score for feeling scared after the event."
+            },
+            "actual_hostile": {
+                "type": "number",
+                "description": "Actual emotional score for feeling hostile after the event."
+            },
+            "actual_enthusiastic": {
+                "type": "number",
+                "description": "Actual emotional score for feeling enthusiastic after the event."
+            },
+            "actual_proud": {
+                "type": "number",
+                "description": "Actual emotional score for feeling proud after the event."
+            },
+            "actual_irritable": {
+                "type": "number",
+                "description": "Actual emotional score for feeling irritable after the event."
+            },
+            "actual_alert": {
+                "type": "number",
+                "description": "Actual emotional score for feeling alert after the event."
+            },
+            "actual_ashamed": {
+                "type": "number",
+                "description": "Actual emotional score for feeling ashamed after the event."
+            },
+            "actual_inspired": {
+                "type": "number",
+                "description": "Actual emotional score for feeling inspired after the event."
+            },
+            "actual_nervous": {
+                "type": "number",
+                "description": "Actual emotional score for feeling nervous after the event."
+            },
+            "actual_determined": {
+                "type": "number",
+                "description": "Actual emotional score for feeling determined after the event."
+            },
+            "actual_attentive": {
+                "type": "number",
+                "description": "Actual emotional score for feeling attentive after the event."
+            },
+            "actual_jittery": {
+                "type": "number",
+                "description": "Actual emotional score for feeling jittery after the event."
+            },
+            "actual_active": {
+                "type": "number",
+                "description": "Actual emotional score for feeling active after the event."
+            },
+            "actual_afraid": {
+                "type": "number",
+                "description": "Actual emotional score for feeling afraid after the event."
+            }
+        },
+        "required": [
+            "player",
+            "current_interested",
+            "current_distressed",
+            "current_excited",
+            "current_upset",
+            "current_strong",
+            "current_guilty",
+            "current_scared",
+            "current_hostile",
+            "current_enthusiastic",
+            "current_proud",
+            "current_irritable",
+            "current_alert",
+            "current_ashamed",
+            "current_inspired",
+            "current_nervous",
+            "current_determined",
+            "current_attentive",
+            "current_jittery",
+            "current_active",
+            "current_afraid",
+            "anticipated_interested",
+            "anticipated_distressed",
+            "anticipated_excited",
+            "anticipated_upset",
+            "anticipated_strong",
+            "anticipated_guilty",
+            "anticipated_scared",
+            "anticipated_hostile",
+            "anticipated_enthusiastic",
+            "anticipated_proud",
+            "anticipated_irritable",
+            "anticipated_alert",
+            "anticipated_ashamed",
+            "anticipated_inspired",
+            "anticipated_nervous",
+            "anticipated_determined",
+            "anticipated_attentive",
+            "anticipated_jittery",
+            "anticipated_active",
+            "anticipated_afraid",
+            "decision",
+            "feedback",
+            "actual_interested",
+            "actual_distressed",
+            "actual_excited",
+            "actual_upset",
+            "actual_strong",
+            "actual_guilty",
+            "actual_scared",
+            "actual_hostile",
+            "actual_enthusiastic",
+            "actual_proud",
+            "actual_irritable",
+            "actual_alert",
+            "actual_ashamed",
+            "actual_inspired",
+            "actual_nervous",
+            "actual_determined",
+            "actual_attentive",
+            "actual_jittery",
+            "actual_active",
+            "actual_afraid"
+        ], 'type': 'object'
+    }
+}
+openai_schema = {'type': 'function', 'function': schema_new}
+# FORMAT_FUNCTION = [OpenAIFunction(assess_emotions, schema)]
+format_function_list = [OpenAIFunction(assess_emotions, openai_schema)]
