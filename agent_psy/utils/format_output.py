@@ -427,6 +427,7 @@ schema_new = {
     "name": "assess_emotions",
     "description": "Function to assess and record the emotional state of a player before and after making a judgment using the PANAS scale.",
     "parameters": {
+        "type": "object",
         "properties": {
             "player": {
                 "type": "string",

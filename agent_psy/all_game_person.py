@@ -6,16 +6,16 @@ import time
 
 import openai
 import tqdm
-# from data.game_prompt import GAME_PROMPT, PROCESS_PROMPT
-from data.game_prompt_co import GAME_PROMPT, PROCESS_PROMPT
-from exp_model_class import ExtendedModelType
-from utils.format_output import schema,format_function_list
-from zhipuai import ZhipuAI
-
 from camel.agents import ChatAgent
 from camel.configs import ChatGPTConfig, FunctionCallingConfig, OpenSourceConfig
 from camel.messages import BaseMessage
 from camel.types.enums import OpenAIBackendRole, RoleType
+from data.game_prompt import GAME_PROMPT, PROCESS_PROMPT
+# from data.game_prompt_co import GAME_PROMPT, PROCESS_PROMPT
+from exp_model_class import ExtendedModelType
+from utils.format_agent import Format_ChatAgent
+from utils.format_output import format_function_list, schema_new
+from zhipuai import ZhipuAI
 
 TEMPERATURE = 0.95
 TEST = True
@@ -144,21 +144,22 @@ def get_res(
             assistant_model_config = FunctionCallingConfig.from_openai_function_list(
                 function_list=format_function_list,
                 kwargs=dict(temperature=TEMPERATURE),
-                function_call={
-                    "type": "function", "function": {"name": "assess_emotions"}}
+                function_call=schema_new
             )
-
-            agent = ChatAgent(
-                role,
+            assistant_agent_kwargs = dict(
                 model_type=model_type,
-                output_language="English",
                 model_config=assistant_model_config,
                 function_list=format_function_list,
+            )
+            agent = Format_ChatAgent(
+                role,
+                output_language="English",
+                **(assistant_agent_kwargs),
             )
         for i in tqdm.trange(exp_round):
             round_input = str_mes(PROCESS_PROMPT.format(
                 x=i+1, y=allocation["one"][i], z=allocation["two"][i]))
-            final_all_res = agent.step(round_input)
+            final_all_res = agent.step(round_input, format=True)
             final_res = final_all_res.msg
             res_content = final_res.content
             agent.update_memory(final_res, OpenAIBackendRole.ASSISTANT)
@@ -277,7 +278,7 @@ def run_exp(
     special_prompt_key="",
 ):
     for model in model_list:
-        folder_path = f"co_res/{model.value}_res/"
+        folder_path = f"res/{model.value}_res/"
         folder_path, extra_prompt = gen_intial_setting(
             model,
             folder_path,
@@ -300,7 +301,7 @@ if __name__ == "__main__":
         # ExtendedModelType.VICUNA,
         # ExtendedModelType.LLAMA_2,
         # ExtendedModelType.INSTRUCT_GPT,
-        # ExtendedModelType.GPT_4,
+        # ExtendedModelType.GPT_4_TURBO,
         # ExtendedModelType.GPT_3_5_TURBO_INSTRUCT,
         ExtendedModelType.GPT_3_5_TURBO,
         # ExtendedModelType.STUB,
