@@ -10,23 +10,26 @@ choice_pattern = re.compile(r'Output: My choice was: (\w+)')
 
 def extract_scores_and_choice(text):
     # print(text)
-    parts = re.split(r"(Anticipated emotional state scores after the judgment:|Actual emotional state after making the judgment:)", text)
+    parts = re.split(
+        r"(Anticipated emotional state scores after the judgment:|Actual emotional state after making the judgment:)", text)
     current_scores = dict(score_pattern.findall(parts[4]))
-    current_scores = {k + "_Current": int(v) for k, v in current_scores.items()}  
-    
+    current_scores = {k + "_Current": int(v)
+                      for k, v in current_scores.items()}
+
     # anticipated_scores = dict(score_pattern.findall(parts[5]))
     # print("Anticipated emotional state scores:", anticipated_scores)
 
     actual_scores = dict(score_pattern.findall(text))
-    actual_scores = {k + "_Actual": int(v) for k, v in actual_scores.items()}  
+    actual_scores = {k + "_Actual": int(v) for k, v in actual_scores.items()}
     scores = {**current_scores, **actual_scores}
     choice_match = choice_pattern.search(text)
-    if choice_match:  
+    if choice_match:
         scores['Choice'] = choice_match.group(1)
     else:
-        scores['Choice'] = None  
+        scores['Choice'] = None
 
     return scores
+
 
 def read_data(filepath):
     with open(filepath, 'r', encoding='utf-8') as file:

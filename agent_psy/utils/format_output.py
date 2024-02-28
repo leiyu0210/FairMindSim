@@ -1,5 +1,7 @@
 import json
 
+from camel.functions import OpenAIFunction
+
 
 def assess_emotions(
         player,
@@ -266,7 +268,7 @@ def assess_emotions(
             },
             "decision": {
                 "type": "string",
-                "description": "Player's decision."
+                "description": "Player's decision. You can only output 'Accept' or 'Reject' as the decision."
             },
             "feedback": {
                 "type": "number",
