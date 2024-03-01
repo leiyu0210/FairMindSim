@@ -301,9 +301,9 @@ if __name__ == "__main__":
         # ExtendedModelType.VICUNA,
         # ExtendedModelType.LLAMA_2,
         # ExtendedModelType.INSTRUCT_GPT,
-        # ExtendedModelType.GPT_4_TURBO,
+        ExtendedModelType.GPT_4_TURBO,
         # ExtendedModelType.GPT_3_5_TURBO_INSTRUCT,
-        ExtendedModelType.GPT_3_5_TURBO,
+        # ExtendedModelType.GPT_3_5_TURBO,
         # ExtendedModelType.STUB,
     ]
     openai.api_key = api
