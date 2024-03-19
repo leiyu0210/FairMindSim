@@ -9,9 +9,9 @@ def standardize(df, columns):
     df[columns] = scaler.fit_transform(df[columns])
     return df
 
-human_file_path = '/Users/leiyu/Desktop/LLM4Psy/data/human_data/human_data_all_0303.xlsx'
-gpt3_5_file_path = '/Users/leiyu/Desktop/LLM4Psy/all_agents_gpt3_volatility_mean.xlsx'
-gpt4_file_path = '/Users/leiyu/Desktop/LLM4Psy/all_agents_gpt4_volatility_mean.xlsx'
+human_file_path = './data/human_data/human_data_all_0303.xlsx'
+gpt3_5_file_path = './all_agents_gpt3_volatility_mean.xlsx'
+gpt4_file_path = './all_agents_gpt4_volatility_mean.xlsx'
 
 human_data = pd.read_excel(human_file_path)
 gpt3_5_data = pd.read_excel(gpt3_5_file_path)
