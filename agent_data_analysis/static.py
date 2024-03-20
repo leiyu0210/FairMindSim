@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from collections import Counter
 
-file_path = '/Users/leiyu/Desktop/LLM4Psy/data/gpt_data/data_agent_addition_gpt4.xlsx'
+file_path = './data/gpt_data/data_agent_addition_gpt4.xlsx'
 
 df = pd.read_excel(file_path)
 
@@ -62,5 +62,5 @@ volatility_df = volatility_df.rename(columns={
 
 # print(volatility_df)
 
-output_path = '/Users/leiyu/Desktop/LLM4Psy/agent_addition_gpt4_volatility.xlsx'
+output_path = './agent_addition_gpt4_volatility.xlsx'
 volatility_df.to_excel(output_path, index=False)
