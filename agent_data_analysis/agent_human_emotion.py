@@ -4,10 +4,12 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
+
 def standardize(df, columns):
     scaler = StandardScaler()
     df[columns] = scaler.fit_transform(df[columns])
     return df
+
 
 human_file_path = './data/human_data/human_data_all_0303.xlsx'
 gpt3_5_file_path = './all_agents_gpt3_volatility_mean.xlsx'
@@ -18,21 +20,26 @@ gpt3_5_data = pd.read_excel(gpt3_5_file_path)
 gpt4_data = pd.read_excel(gpt4_file_path)
 
 
-human_rename_dict = {'id' : 'ID', 'MvEmo': 'current_valence', 'MvEp': 'anticipated_valence', 'MvRe': 'actual_valence'}
+human_rename_dict = {'id': 'ID', 'MvEmo': 'current_valence',
+                     'MvEp': 'anticipated_valence', 'MvRe': 'actual_valence'}
 human_data.rename(columns=human_rename_dict, inplace=True)
-emotion_indicators = ['current_valence', 'anticipated_valence', 'actual_valence']
+emotion_indicators = ['current_valence',
+                      'anticipated_valence', 'actual_valence']
 
 human_data_standardized = standardize(human_data.copy(), emotion_indicators)
 gpt3_5_data_standardized = standardize(gpt3_5_data.copy(), emotion_indicators)
 gpt4_data_standardized = standardize(gpt4_data.copy(), emotion_indicators)
 age_grouped_stats = human_data_standardized.groupby('group')['age'].describe()
-gender_grouped_distribution = human_data_standardized.groupby('group')['gender'].value_counts()
+gender_grouped_distribution = human_data_standardized.groupby('group')[
+    'gender'].value_counts()
 
 human_data_standardized['Source'] = 'Human'
 gpt3_5_data_standardized['Source'] = 'GPT-3.5'
 gpt4_data_standardized['Source'] = 'GPT-4'
-merged_data = human_data_standardized.merge(gpt3_5_data_standardized, on='ID', how='outer', suffixes=('', '_gpt3_5'))
-merged_data = merged_data.merge(gpt4_data_standardized, on='ID', how='outer', suffixes=('', '_gpt4'))
+merged_data = human_data_standardized.merge(
+    gpt3_5_data_standardized, on='ID', how='outer', suffixes=('', '_gpt3_5'))
+merged_data = merged_data.merge(
+    gpt4_data_standardized, on='ID', how='outer', suffixes=('', '_gpt4'))
 
 print(merged_data.columns)
 
@@ -60,7 +67,7 @@ baseline_scores = {
 
 # Calculate deviations for each model in each category
 deviations = {
-    
+
 }
 
 renamed_categories = ['All', 'Female', 'Male']
@@ -91,6 +98,7 @@ custom_colors = [color_alpha_dict.get(model[:-4], "gray") for model in models]
 categories_group_1 = renamed_categories
 categories_group_2 = renamed_categories
 categories_group_3 = renamed_categories
+
 
 def draw_brace(
     ax,
@@ -133,7 +141,8 @@ def draw_brace(
         text,
         xy=(
             np.mean([xmin, xmax]),
-            ymin - y_offset - (yspan * y_height * 1.5 if draw_brace else 0) - 0.6,
+            ymin - y_offset - (yspan * y_height *
+                               1.5 if draw_brace else 0) - 0.6,
         ),
         xytext=(0, -10),
         textcoords="offset points",
@@ -162,37 +171,37 @@ ax.spines["top"].set_visible(False)
 ax.spines["right"].set_visible(False)
 for i, model in enumerate(models):
     for j, category in enumerate(renamed_categories):
-        deviation = deviations[category][model]
+        # deviation = deviations[category][model]
         baseline = baseline_scores[model]
-        bottom = baseline if deviation >= 0 else baseline + deviation
-        height = abs(deviation)
+        # bottom = baseline if deviation >= 0 else baseline + deviation
+        # height = abs(deviation)
         plt.bar(
             j + offsets[i],
-            height,
+            baseline,
             bar_width,
-            bottom=bottom,
+            bottom=0,
             color=custom_colors[i],
-            label=model.get(model, model) if j == 0 else "",
+            label=model,
             # fontsize=17,
         )
-        if deviation < 0:
-            plt.text(
-                j + offsets[i],
-                baseline + deviation - 0.16,
-                f"{baseline + deviation:.1f}",
-                ha="center",  # Horizontal alignment
-                va="bottom",  # Vertical alignment
-                fontsize=12,
-            )
-        else:
-            plt.text(
-                j + offsets[i],
-                baseline + deviation,
-                f"{baseline + deviation:.1f}",
-                ha="center",  # Horizontal alignment
-                va="bottom",  # Vertical alignment
-                fontsize=12,
-            )
+        # if deviation < 0:
+        #     plt.text(
+        #         j + offsets[i],
+        #         baseline + deviation - 0.16,
+        #         f"{baseline + deviation:.1f}",
+        #         ha="center",  # Horizontal alignment
+        #         va="bottom",  # Vertical alignment
+        #         fontsize=12,
+        #     )
+        # else:
+        #     plt.text(
+        #         j + offsets[i],
+        #         baseline + deviation,
+        #         f"{baseline + deviation:.1f}",
+        #         ha="center",  # Horizontal alignment
+        #         va="bottom",  # Vertical alignment
+        #         fontsize=12,
+        #     )
 
 
 left_color = "#E0FFD6"
@@ -229,40 +238,42 @@ brace3, brace_annotation3, text3, text_annotation3 = draw_brace(
 # Add vertical lines and baselines with matching colors
 for x in range(len(renamed_categories) - 1):
     plt.axvline(x + 0.5, color="gray", linestyle="--", lw=1, alpha=0.2)
-for model, baseline in baseline_scores.items():
-    plt.hlines(
-        baseline,
-        xmin=-0.5,
-        xmax=len(renamed_categories) - 0.5,
-        colors=color_alpha_dict.get(model[:-4], "gray"),
-        linestyles="dotted",
-    )
-    if (
-        model == "llama-2-70b_res"
-        or model == "gpt-3.5-turbo-instruct_res"
-        or model == "gpt-4_res"
-    ):
-        plt.text(
-            len(renamed_categories) - 0.5,  # Position at the right end of the plot
-            baseline - 0.13,
-            f"{baseline:.2f}",  # Display the baseline value
-            va="center",  # Vertical alignment
-            ha="right",  # Horizontal alignment
-            fontsize=15,
-            color=color_alpha_dict.get(model[:-4], "gray"),
-        )
-    else:
-        plt.text(
-            len(renamed_categories) - 0.5,  # Position at the right end of the plot
-            baseline + 0.1,
-            f"{baseline:.2f}",  # Display the baseline value
-            va="center",  # Vertical alignment
-            ha="right",  # Horizontal alignment
-            fontsize=15,
-            color=color_alpha_dict.get(model[:-4], "gray"),
-        )
-separator_index = len(categories_group_1) - 0.5
-# plt.axvline(separator_index, color="crimson", linestyle="-", linewidth=2)
+# for model, baseline in baseline_scores.items():
+#     plt.hlines(
+#         baseline,
+#         xmin=-0.5,
+#         xmax=len(renamed_categories) - 0.5,
+#         colors=color_alpha_dict.get(model[:-4], "gray"),
+#         linestyles="dotted",
+#     )
+#     if (
+#         model == "llama-2-70b_res"
+#         or model == "gpt-3.5-turbo-instruct_res"
+#         or model == "gpt-4_res"
+#     ):
+#         plt.text(
+#             # Position at the right end of the plot
+#             len(renamed_categories) - 0.5,
+#             baseline - 0.13,
+#             f"{baseline:.2f}",  # Display the baseline value
+#             va="center",  # Vertical alignment
+#             ha="right",  # Horizontal alignment
+#             fontsize=15,
+#             color=color_alpha_dict.get(model[:-4], "gray"),
+#         )
+#     else:
+#         plt.text(
+#             # Position at the right end of the plot
+#             len(renamed_categories) - 0.5,
+#             baseline + 0.1,
+#             f"{baseline:.2f}",  # Display the baseline value
+#             va="center",  # Vertical alignment
+#             ha="right",  # Horizontal alignment
+#             fontsize=15,
+#             color=color_alpha_dict.get(model[:-4], "gray"),
+#         )
+# separator_index = len(categories_group_1) - 0.5
+# # plt.axvline(separator_index, color="crimson", linestyle="-", linewidth=2)
 
 
 ax.axvspan(
@@ -309,6 +320,6 @@ plt.legend(
 plt.ylabel("Z-Scored(Mean)", fontsize=25)
 # plt.xlabel("Category")
 plt.tight_layout()  # Adjust layout for legend below
-plt.savefig(
-)
-# plt.show()
+# plt.savefig(
+# )
+plt.show()
