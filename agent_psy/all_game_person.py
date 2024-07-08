@@ -10,8 +10,9 @@ from camel.agents import ChatAgent
 from camel.configs import ChatGPTConfig, FunctionCallingConfig, OpenSourceConfig
 from camel.messages import BaseMessage
 from camel.types.enums import OpenAIBackendRole, RoleType
-# from data.game_prompt import GAME_PROMPT, PROCESS_PROMPT
-from data.game_prompt_co import GAME_PROMPT, PROCESS_PROMPT
+from data.game_prompt import GAME_PROMPT, PROCESS_PROMPT, PROCESS_TWO_DIMENTION_PROMPT
+
+# from data.game_prompt_co import GAME_PROMPT, PROCESS_PROMPT
 from exp_model_class import ExtendedModelType
 from utils.format_agent import Format_ChatAgent
 from utils.format_output import format_function_list, schema_new
@@ -41,9 +42,15 @@ with open("./gpt-4_test_id/lack_3.5.json", "r") as json_file:
     gpt_4_lack = json.load(json_file)
 with open("./data/allocation_se_co.json", "r") as json_file:
     allocation_se_co = json.load(json_file)
-with open("./data/characters_addition.json", "r")as json_file:
+with open("./data/characters_addition.json", "r") as json_file:
     new_character = json.load(json_file)
-# all_chara = new_character
+
+with open("./data/re_check.json") as json_file:
+    re_check = json.load(json_file)
+
+with open("./data/check_chara_question.json", "r") as json_file:
+    check_chara_question = json.load(json_file)
+all_chara = new_character
 open_model_path_dict = {
     ExtendedModelType.VICUNA: "lmsys/vicuna-7b-v1.3",
     ExtendedModelType.LLAMA_2: "meta-llama/Llama-2-7b-chat-hf",
@@ -122,10 +129,11 @@ def get_res(
         ]
         for i in tqdm.trange(exp_round):
             round_input = PROCESS_PROMPT.format(
-                x=i+1, y=allocation["one"][i], z=allocation["two"][i])
+                x=i + 1, y=allocation["one"][i], z=allocation["two"][i]
+            )
             messages.append({"role": "user", "content": round_input})
             final_res = get_glm_res(messages, model_type.value).content
-            responses_record["round_" + str(i+1)] = [round_input, final_res]
+            responses_record["round_" + str(i + 1)] = [round_input, final_res]
             messages.append({"role": "assistant", "content": final_res})
     else:
         role = str_mes(role.content + extra_prompt)
@@ -148,7 +156,7 @@ def get_res(
             assistant_model_config = FunctionCallingConfig.from_openai_function_list(
                 function_list=format_function_list,
                 kwargs=dict(temperature=TEMPERATURE),
-                function_call=schema_new
+                function_call=schema_new,
             )
             assistant_agent_kwargs = dict(
                 model_type=model_type,
@@ -161,14 +169,102 @@ def get_res(
                 **(assistant_agent_kwargs),
             )
         for i in tqdm.trange(exp_round):
-            round_input = str_mes(PROCESS_PROMPT.format(
-                x=i+1, y=allocation["one"][i], z=allocation["two"][i]))
+            round_input = str_mes(
+                PROCESS_PROMPT.format(
+                    x=i + 1, y=allocation["one"][i], z=allocation["two"][i]
+                )
+            )
             final_all_res = agent.step(round_input, format=True)
             final_res = final_all_res.msg
             res_content = final_res.content
             agent.update_memory(final_res, OpenAIBackendRole.ASSISTANT)
-            responses_record["round_" +
-                             str(i+1)] = [round_input.content, res_content]
+            responses_record["round_" + str(i + 1)] = [round_input.content, res_content]
+
+    return (content, responses_record)
+
+
+def check_character(
+    id,
+    role,
+    model_type=ExtendedModelType.GPT_4,
+    extra_prompt="",
+    server_url="http://localhost:8000/v1",
+    exp_round=20,
+):
+    content = ""
+    responses_record = {}
+    if id < 51:
+        allocation = allocation_se_co
+    else:
+        allocation = allocation_se_co
+
+    if model_type in [ExtendedModelType.CHATGLM_4, ExtendedModelType.CHATGLM_3]:
+        sys_prompt = role.content + extra_prompt
+        messages = [
+            {"role": "system", "content": sys_prompt},
+        ]
+        for i in tqdm.trange(exp_round):
+            round_input = PROCESS_TWO_DIMENTION_PROMPT.format(
+                x=i + 1, y=allocation["one"][i], z=allocation["two"][i]
+            )
+            messages.append({"role": "user", "content": round_input})
+            final_res = get_glm_res(messages, model_type.value).content
+            responses_record["round_" + str(i + 1)] = [round_input, final_res]
+            messages.append({"role": "assistant", "content": final_res})
+    else:
+        role = str_mes(role.content + extra_prompt)
+        if model_type in [
+            ExtendedModelType.VICUNA,
+            ExtendedModelType.LLAMA_2,
+        ]:
+            open_source_config = dict(
+                model_type=model_type,
+                model_config=OpenSourceConfig(
+                    model_path=open_model_path_dict[model_type],
+                    server_url=server_url,
+                    api_params=ChatGPTConfig(temperature=TEMPERATURE),
+                ),
+            )
+            agent = ChatAgent(
+                role, output_language="English", **(open_source_config or {})
+            )
+        else:
+            # assistant_model_config = FunctionCallingConfig.from_openai_function_list(
+            #     function_list=format_function_list,
+            #     kwargs=dict(temperature=TEMPERATURE),
+            #     function_call=schema_new
+            # )
+            # assistant_agent_kwargs = dict(
+            #     model_type=model_type,
+            #     model_config=assistant_model_config,
+            #     function_list=format_function_list,
+            # )
+            config = dict(
+                model_type=model_type,
+                model_config=ChatGPTConfig(temperature=TEMPERATURE),
+            )
+            agent = ChatAgent(
+                role,
+                output_language="English",
+                **(config),
+            )
+        # for i in tqdm.trange(exp_round):
+        #     round_input = str_mes(
+        #         PROCESS_TWO_DIMENTION_PROMPT.format(
+        #             x=i + 1, y=allocation["one"][i], z=allocation["two"][i]
+        #         )
+        #     )
+        #     final_all_res = agent.step(round_input)
+        #     final_res = final_all_res.msg
+        #     res_content = final_res.content
+        #     agent.update_memory(final_res, OpenAIBackendRole.ASSISTANT)
+        #     responses_record["round_" + str(i + 1)] = [round_input.content, res_content]
+        round_input = str_mes(re_check["1"])
+        final_all_res = agent.step(round_input)
+        final_res = final_all_res.msg
+        res_content = final_res.content
+        agent.update_memory(final_res, OpenAIBackendRole.ASSISTANT)
+        responses_record["record"] = [round_input.content, res_content]
 
     return (content, responses_record)
 
@@ -186,23 +282,21 @@ def gen_character_res(
     dialog_history = {}
     structured_output = []
     for id, role in all_chara.items():
-        if int(id) < 51:
-            continue
+        # if int(id) < 51:
+        #     continue
         if part_run:
             print(need_run_ids, id)
             if id not in need_run_ids:
-                print('skip', id)
+                print("skip", id)
                 continue
         print(f"processing {id}")
         if model_type == ExtendedModelType.GPT_4:
             if id not in gpt_4_have and id not in gpt_4_lack:
                 continue
         if int(id) < 51:
-            save_file = save_path + "se" + "_" + \
-                str(model_type.value) + ".json"
+            save_file = save_path + "se" + "_" + str(model_type.value) + ".json"
         else:
-            save_file = save_path + "ex" + "_" + \
-                str(model_type.value) + ".json"
+            save_file = save_path + "ex" + "_" + str(model_type.value) + ".json"
         if os.path.exists(save_file):
             with open(save_file, "r") as json_file:
                 dialog_history = json.load(json_file)
@@ -216,7 +310,13 @@ def gen_character_res(
             meta_dict={},
             content=role,
         )
-        ont_res, dialog = get_res(
+        # ont_res, dialog = get_res(
+        #     int(id),
+        #     role_message,
+        #     model_type,
+        #     extra_prompt,
+        # )
+        ont_res, dialog = check_character(
             int(id),
             role_message,
             model_type,
@@ -284,7 +384,7 @@ def run_exp(
     special_prompt_key="",
 ):
     for model in model_list:
-        folder_path = f"co_res/{model.value}_res/"
+        folder_path = f"re_check_new_res/{model.value}_res/"
         folder_path, extra_prompt = gen_intial_setting(
             model,
             folder_path,
@@ -311,6 +411,7 @@ if __name__ == "__main__":
         ExtendedModelType.GPT_4_TURBO,
         # ExtendedModelType.GPT_3_5_TURBO_INSTRUCT,
         # ExtendedModelType.STUB,
+        ExtendedModelType.GPT_4O,
     ]
     openai.api_key = api
 

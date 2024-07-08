@@ -1,4 +1,3 @@
-
 import re
 from enum import Enum
 
@@ -14,6 +13,7 @@ class ExtendedModelType(Enum):
     GPT_4_32K = "gpt-4-32k"
     GPT_4_TURBO = "gpt-4-1106-preview"
     GPT_4_TURBO_VISION = "gpt-4-vision-preview"
+    GPT_4O = "gpt-4o"
 
     STUB = "stub"
 
@@ -42,6 +42,7 @@ class ExtendedModelType(Enum):
             ExtendedModelType.GPT_3_5_TURBO_16K_0613,
             ExtendedModelType.INSTRUCT_GPT,
             ExtendedModelType.GPT_3_5_TURBO_INSTRUCT,
+            ExtendedModelType.GPT_4O,
         }
 
     @property
@@ -68,6 +69,8 @@ class ExtendedModelType(Enum):
         elif self is ExtendedModelType.GPT_4_32K:
             return 32768
         elif self is ExtendedModelType.GPT_4_TURBO:
+            return 128000
+        elif self is ExtendedModelType.GPT_4O:
             return 128000
         elif self is ExtendedModelType.GPT_4_TURBO_VISION:
             return 128000
@@ -100,13 +103,12 @@ class ExtendedModelType(Enum):
             bool: Whether the model type mathches the model name.
         """
         if self is ExtendedModelType.VICUNA:
-            pattern = r'^vicuna-\d+b-v\d+\.\d+$'
+            pattern = r"^vicuna-\d+b-v\d+\.\d+$"
             return bool(re.match(pattern, model_name))
         elif self is ExtendedModelType.VICUNA_16K:
-            pattern = r'^vicuna-\d+b-v\d+\.\d+-16k$'
+            pattern = r"^vicuna-\d+b-v\d+\.\d+-16k$"
             return bool(re.match(pattern, model_name))
         elif self is ExtendedModelType.LLAMA_2:
-            return (self.value in model_name.lower()
-                    or "llama2" in model_name.lower())
+            return self.value in model_name.lower() or "llama2" in model_name.lower()
         else:
             return self.value in model_name.lower()
