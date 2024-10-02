@@ -16,8 +16,8 @@ Before you can run the experiments, you'll need to ensure your system meets the 
 1. Clone this repository to your local machine:
 
    ```
-   git clone https://github.com/leiyu0210/LLM4Psy.git
-   cd LLM4Psy
+   git clone https://github.com/leiyu0210/FairMindSim.git
+   cd FairMindSim
    ```
 
 2. Install the required Python packages:
