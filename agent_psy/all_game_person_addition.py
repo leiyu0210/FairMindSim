@@ -19,7 +19,7 @@ TEMPERATURE = 0.95
 TEST = True
 
 client = ZhipuAI(api_key=os.environ["GLM-KEY"])
-api = "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"
+api = ""
 os.environ["OPENAI_API_KEY"] = api
 openai.api_key = api
 with open(r"data/characters_addition.json", "r") as json_file:
