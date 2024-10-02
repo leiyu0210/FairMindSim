@@ -1,6 +1,6 @@
 
 
-# Emotional Dynamics in LLM Agents: Human-Like Behavior in Economic Games
+# FairMindSim: LLM Agents Evolution in Self-Ecologies amid the Ethical Dilemma
 
 This repository contains the code for experiments investigating the emotional dynamics of language model (LLM) agents in economic games. Our experiments are designed to simulate human-like behavior by analyzing the mood transitions of LLM agents in response to economic game scenarios.
 
