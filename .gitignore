@@ -1,0 +1,49 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+*.egg
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# IDE / editor
+.vscode/
+.history/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project
+*.zip
+*.log
+
+# Generated artifacts (figures, simulation results, fitted parameters)
+analysis/plots/
+analysis/brem_simulation_results/
+analysis/*.csv
+analysis/*.pdf
+analysis/*.png
+analysis/data/
+
+# Raw / collected data — see README "Data Availability"
+agent_psy/data/*.xlsx
+agent_psy/data/characters*.json
+agent_psy/data/no_format_ids_*.json
+agent_psy/data/unique_none_choice_ids.json
+agent_psy/**/res/
